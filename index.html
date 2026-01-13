@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE MATRIX OF SMOKE // PROCEDURAL OS</title>
+    <title>THE MATRIX OF SMOKE // VIRAL OS</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -14,8 +14,8 @@
         <div class="glitch-container">
             <h1 class="system-title">SMOKE_STREAM_OS</h1>
             <div class="load-bar-container"><div id="load-bar"></div></div>
-            <p id="boot-status">GENERATING PROCEDURAL GEOMETRIES...</p>
-            <button id="ignite-btn" style="display:none;">INITIALIZE NEURAL LINK</button>
+            <p id="boot-status">INITIALIZING VIRAL PROTOCOLS...</p>
+            <button id="ignite-btn" style="display:none;">ACTIVATE NEURAL LINK</button>
         </div>
     </div>
 
@@ -25,6 +25,7 @@
         <header>
             <div class="system-status">CORE_SYNC: <span id="sync-val">0.00</span>ms</div>
             <div class="active-node">DNA_SEED: <span id="dna-seed">0x000000</span></div>
+            <div class="effect-status">FX_MODE: <span id="fx-mode">NORMAL</span></div>
         </header>
 
         <aside id="system-logs">
@@ -56,6 +57,17 @@
             <div class="mini-visualizer">
                 <canvas id="analyser-render"></canvas>
             </div>
+            <button id="share-dna-btn">SHARE DNA</button>
+        </div>
+    </div>
+
+    <canvas id="share-canvas" style="display:none;"></canvas>
+
+    <div id="dna-card-popup" style="display:none;">
+        <img id="dna-card-image" src="" alt="Shareable DNA Card">
+        <div class="share-buttons">
+            <a id="download-dna" download="dj_smoke_stream_dna.png">DOWNLOAD</a>
+            <button id="close-dna-popup">CLOSE</button>
         </div>
     </div>
 
