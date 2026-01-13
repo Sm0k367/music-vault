@@ -45,7 +45,7 @@
             </div>
             
             <div class="action-bar">
-                <button id="share-dna-btn">SHARE_DNA</button>
+                <button id="share-dna-btn">GENERATE_DNA_POSTER</button>
             </div>
         </div>
     </div>
@@ -53,14 +53,16 @@
     <div id="dna-card-popup">
         <div class="popup-inner">
             <div class="card-frame">
-                <img id="dna-card-image" src="">
+                <img id="dna-card-image" src="" alt="DNA Poster">
             </div>
             <div class="popup-btns">
-                <a id="download-dna" download="smoke_stream_dna.png">SAVE_TO_DISK</a>
-                <button id="close-popup">EXIT_NODE</button>
+                <a id="download-dna" download="smoke_stream_dna.png">DOWNLOAD_POSTER</a>
+                <button id="close-popup">RESUME_SYNC</button>
             </div>
         </div>
     </div>
+
+    <canvas id="poster-canvas" width="1080" height="1920" style="display:none;"></canvas>
 
     <audio id="audio-master" crossorigin="anonymous"></audio>
 
