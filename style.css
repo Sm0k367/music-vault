@@ -1,159 +1,115 @@
-/* --- THE MATRIX OF SMOKE // STABLE VIRAL UI --- */
+/* --- THE MATRIX OF SMOKE // CORE AESTHETIC --- */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syncopate:wght@700&display=swap');
+
 :root {
-    --dna-color: #00f2ff;
-    --glass: rgba(0, 0, 0, 0.85);
-    --border: rgba(255, 255, 255, 0.1);
+    --neon: #00f2ff;
+    --glass: rgba(0, 5, 10, 0.9);
+    --border: rgba(0, 242, 255, 0.2);
 }
 
-/* RESET */
-* { box-sizing: border-box; }
 body, html {
     margin: 0; padding: 0;
     background: #000;
-    color: #fff;
+    color: var(--neon);
     font-family: 'Share Tech Mono', monospace;
     overflow: hidden;
     height: 100vh;
 }
 
-/* 3D STAGE */
-#world-canvas {
-    position: fixed;
-    top: 0; left: 0;
-    z-index: 1;
-    pointer-events: none; /* Allows clicks to pass through to the menu */
-}
-
-/* HUD LAYOUT */
-#hud-interface {
-    position: relative;
-    z-index: 10;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    padding: 30px;
-    pointer-events: none; /* Child elements must re-enable pointer-events */
-}
-
-header, #system-logs, #node-directory, .bottom-dock {
-    pointer-events: auto; /* Enable interaction for these specific parts */
-}
-
-/* HEADER */
-header {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 15px;
-}
-
-/* DIRECTORY */
-#node-directory {
-    position: absolute;
-    right: 30px;
-    top: 100px;
-    width: 350px;
-    bottom: 180px;
-    background: var(--glass);
-    border: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-}
-
-#song-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-}
-
-.song-node {
-    padding: 12px;
-    margin-bottom: 5px;
-    background: rgba(255, 255, 255, 0.03);
-    cursor: pointer;
-    transition: 0.2s;
-    font-size: 0.8rem;
-    color: #aaa;
-}
-
-.song-node:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--dna-color);
-    border-left: 3px solid var(--dna-color);
-}
-
-/* BOTTOM DOCK */
-.bottom-dock {
-    position: absolute;
-    bottom: 30px;
-    left: 30px;
-    right: 30px;
-    background: var(--glass);
-    border: 1px solid var(--border);
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.stat-bar {
-    width: 100px;
-    height: 4px;
-    background: #222;
-    margin-top: 5px;
-}
-
-.fill {
-    height: 100%;
-    background: var(--dna-color);
-    width: 0%;
-    transition: 0.5s;
-}
-
-/* FX MODES */
-body.fx-whale { filter: sepia(1) saturate(5) hue-rotate(-50deg); }
-body.fx-420 { animation: rainbow 5s infinite linear; }
-@keyframes rainbow {
-    0% { filter: hue-rotate(0deg); }
-    100% { filter: hue-rotate(360deg); }
-}
-
-/* POPUPS */
-#dna-card-popup {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    background: rgba(0,0,0,0.9);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    pointer-events: auto;
-}
-
-#dna-card-image {
-    max-width: 80%;
-    border: 2px solid var(--dna-color);
-    margin-bottom: 20px;
-}
-
-/* BOOT */
+/* --- BOOT OVERLAY (THE FIRST IMPRESSION) --- */
 #boot-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    background: #000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    position: fixed; inset: 0; z-index: 1000;
+    background: radial-gradient(circle at center, #001a1a 0%, #000 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
+
+.system-title {
+    font-family: 'Syncopate'; font-size: 2.5rem; letter-spacing: 12px;
+    margin-bottom: 20px; text-shadow: 0 0 20px var(--neon);
+    position: relative;
+}
+
+/* GLITCH EFFECT */
+.system-title::before {
+    content: attr(data-text); position: absolute; left: -2px;
+    text-shadow: 2px 0 #ff0044; top: 0; overflow: hidden;
+    clip: rect(0, 900px, 0, 0); animation: glitch-1 2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-1 {
+    0% { clip: rect(20px, 9999px, 10px, 0); }
+    100% { clip: rect(80px, 9999px, 90px, 0); }
+}
+
+.load-bar-container { width: 300px; height: 2px; background: rgba(0, 242, 255, 0.1); margin: 20px 0; }
+#load-bar { height: 100%; background: var(--neon); width: 0%; box-shadow: 0 0 15px var(--neon); }
 
 #ignite-btn {
-    padding: 15px 40px;
-    background: transparent;
-    border: 1px solid var(--dna-color);
-    color: var(--dna-color);
-    cursor: pointer;
-    margin-top: 20px;
+    padding: 15px 40px; background: transparent; border: 1px solid var(--neon);
+    color: var(--neon); cursor: pointer; font-family: 'Syncopate'; font-size: 0.8rem;
+    letter-spacing: 2px; transition: 0.4s; z-index: 1001;
 }
+
+#ignite-btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 30px var(--neon); }
+
+/* --- HUD LAYOUT --- */
+#world-canvas { position: fixed; top: 0; left: 0; z-index: 1; }
+
+#hud-interface {
+    position: relative; z-index: 10; height: 100vh;
+    display: flex; flex-direction: column; padding: 25px; pointer-events: none;
+}
+
+header, aside, nav, .bottom-dock { pointer-events: auto; }
+
+header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border); padding-bottom: 15px;
+}
+
+#system-logs {
+    position: absolute; left: 25px; top: 100px; width: 250px;
+    height: 150px; font-size: 0.7rem; opacity: 0.6; overflow: hidden;
+}
+
+#node-directory {
+    position: absolute; right: 25px; top: 80px; width: 320px; bottom: 160px;
+    background: var(--glass); border: 1px solid var(--border);
+    backdrop-filter: blur(10px); display: flex; flex-direction: column;
+}
+
+.directory-header { padding: 15px; background: rgba(0, 242, 255, 0.05); font-size: 0.7rem; letter-spacing: 2px; }
+
+#song-list { flex: 1; overflow-y: auto; padding: 5px; }
+#song-list::-webkit-scrollbar { width: 3px; }
+#song-list::-webkit-scrollbar-thumb { background: var(--neon); }
+
+.song-node {
+    padding: 12px 15px; margin-bottom: 2px; color: #666; cursor: pointer;
+    transition: 0.2s; font-size: 0.8rem; border-left: 0px solid var(--neon);
+}
+
+.song-node:hover { color: var(--neon); background: rgba(0, 242, 255, 0.05); border-left: 4px solid var(--neon); }
+
+/* --- BOTTOM DOCK --- */
+.bottom-dock {
+    position: absolute; bottom: 25px; left: 25px; right: 25px;
+    background: var(--glass); border: 1px solid var(--border);
+    padding: 20px 40px; display: flex; align-items: center; justify-content: space-between;
+}
+
+.track-meta h2 { font-family: 'Syncopate'; font-size: 1rem; margin: 0; letter-spacing: 2px; }
+.track-meta p { font-size: 0.7rem; opacity: 0.5; margin: 5px 0 0 0; }
+
+.mini-visualizer { width: 150px; height: 30px; }
+#analyser-render { width: 100%; height: 100%; }
+
+#share-dna-btn {
+    background: transparent; border: 1px solid var(--neon); color: var(--neon);
+    padding: 8px 15px; font-family: 'Share Tech Mono'; cursor: pointer;
+}
+
+/* FX OVERRIDES */
+body.fx-whale { filter: sepia(1) brightness(0.8) contrast(1.2); }
+body.fx-420 { animation: drift 8s infinite linear alternate; }
+@keyframes drift { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(90deg); } }
