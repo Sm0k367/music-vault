@@ -1,5 +1,5 @@
 /**
- * THE MATRIX OF SMOKE // CORE ENGINE v4.20
+ * THE MATRIX OF SMOKE // MULTI-VERSE ENGINE v5.0
  * Architect: DJ SMOKE STREAM
  */
 
@@ -32,131 +32,145 @@ const SONGS = [
     "Orion's 420 High Way_.mp3", "Lounge.mp3"
 ];
 
-let scene, camera, renderer, stars, analyser, dataArray;
+let scene, camera, renderer, particles, analyser, dataArray;
+let currentRealm = 'neutral';
 const audio = document.getElementById('audio-master');
-const logContainer = document.getElementById('system-logs');
+const vCanvas = document.getElementById('analyser-render');
+const vCtx = vCanvas.getContext('2d');
 
-// --- 1. BOOT SEQUENCE ---
+// --- 1. BOOT LOGIC ---
 window.addEventListener('load', () => {
-    let progress = 0;
-    const interval = setInterval(() => {
-        progress += Math.random() * 15;
-        document.getElementById('load-bar').style.width = Math.min(progress, 100) + "%";
-        if (progress >= 100) {
-            clearInterval(interval);
-            document.getElementById('boot-status').innerText = "SYSTEM READY. LINK ESTABLISHED.";
+    let p = 0;
+    const loader = setInterval(() => {
+        p += Math.random() * 20;
+        document.getElementById('load-bar').style.width = Math.min(p, 100) + "%";
+        if(p >= 100) {
+            clearInterval(loader);
+            document.getElementById('boot-status').innerText = "MULTIVERSE SYNC COMPLETE.";
             document.getElementById('ignite-btn').style.display = "block";
         }
-    }, 150);
+    }, 100);
 });
 
 document.getElementById('ignite-btn').addEventListener('click', () => {
     initThree();
     initAudio();
-    populateSongList();
-    gsap.to("#boot-overlay", { opacity: 0, duration: 1.5, onComplete: () => {
+    populateList();
+    gsap.to("#boot-overlay", { opacity: 0, duration: 1, onComplete: () => {
         document.getElementById('boot-overlay').style.display = 'none';
-        addLog("NEURAL LINK: ONLINE");
+        addLog("SYSTEM: MULTIVERSE_LINK_STABLE");
     }});
 });
 
-// --- 2. GALAXY ENGINE (Three.js) ---
+// --- 2. THE THREE.JS REALM ENGINE ---
 function initThree() {
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.z = 1;
-    camera.rotation.x = Math.PI / 2;
-
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('world-canvas'), antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    const starGeo = new THREE.BufferGeometry();
-    const starCoords = [];
-    for (let i = 0; i < 8000; i++) {
-        starCoords.push(Math.random() * 600 - 300, Math.random() * 600 - 300, Math.random() * 600 - 300);
-    }
-    starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starCoords, 3));
+    const geo = new THREE.BufferGeometry();
+    const pos = [];
+    for(let i=0; i<15000; i++) pos.push(Math.random()*800-400, Math.random()*800-400, Math.random()*800-400);
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
     
-    const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, transparent: true });
-    stars = new THREE.Points(starGeo, starMat);
-    scene.add(stars);
+    const mat = new THREE.PointsMaterial({ size: 1.5, transparent: true, opacity: 0.8, color: 0x00f2ff });
+    particles = new THREE.Points(geo, mat);
+    scene.add(particles);
+    camera.position.z = 200;
 
     animate();
 }
 
-// --- 3. AUDIO & PLAYLIST ---
 function initAudio() {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     analyser = ctx.createAnalyser();
     const source = ctx.createMediaElementSource(audio);
     source.connect(analyser);
     analyser.connect(ctx.destination);
-    analyser.fftSize = 128;
+    analyser.fftSize = 256;
     dataArray = new Uint8Array(analyser.frequencyBinCount);
 }
 
-function populateSongList() {
+// --- 3. REALM SELECTION LOGIC ---
+function setRealm(trackName) {
+    const name = trackName.toLowerCase();
+    let theme = 'neutral';
+    
+    if (name.includes('money') || name.includes('gold') || name.includes('rich')) theme = 'gold';
+    else if (name.includes('lounge') || name.includes('midnight') || name.includes('dreams')) theme = 'blue';
+    else if (name.includes('crunk') || name.includes('dirty') || name.includes('shock') || name.includes('heat')) theme = 'red';
+    else if (name.includes('techno') || name.includes('pulse') || name.includes('digital')) theme = 'emerald';
+
+    document.body.className = `realm-${theme}`;
+    document.getElementById('current-realm').innerText = theme.toUpperCase();
+    currentRealm = theme;
+    
+    // Change Particle Color based on theme
+    const colors = { gold: 0xffcc00, blue: 0x0077ff, red: 0xff0044, emerald: 0x00ff88, neutral: 0x00f2ff };
+    gsap.to(particles.material.color, { r: new THREE.Color(colors[theme]).r, g: new THREE.Color(colors[theme]).g, b: new THREE.Color(colors[theme]).b, duration: 2 });
+}
+
+function populateList() {
     const list = document.getElementById('song-list');
-    SONGS.forEach(song => {
-        const div = document.createElement('div');
-        div.className = 'song-node';
-        div.innerText = song.replace('.mp3', '').toUpperCase();
-        div.onclick = () => playTrack(song);
-        list.appendChild(div);
+    SONGS.forEach(s => {
+        const d = document.createElement('div');
+        d.className = 'song-node';
+        d.innerText = s.replace('.mp3', '').toUpperCase();
+        d.onclick = () => {
+            audio.src = s;
+            audio.play();
+            document.getElementById('current-track').innerText = s.toUpperCase();
+            document.getElementById('track-sub').innerText = "PLAYING FROM SMOKE_STREAM_OS";
+            setRealm(s);
+            addLog(`NODE_LINK: ${s}`);
+        };
+        list.appendChild(d);
     });
 }
 
-function playTrack(filename) {
-    audio.src = filename;
-    audio.play();
-    document.getElementById('current-track').innerText = filename.toUpperCase();
-    addLog(`STREAMING: ${filename}`);
+function addLog(m) {
+    const e = document.createElement('div');
+    e.className = 'log-entry';
+    e.innerText = `> ${m}`;
+    logContainer.prepend(e);
 }
 
-function addLog(msg) {
-    const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    entry.innerText = `> ${msg}`;
-    logContainer.prepend(entry);
-}
-
-// --- 4. THE LIVE LOOP ---
+// --- 4. ANIMATION LOOP (Surgical Movement) ---
 function animate() {
     requestAnimationFrame(animate);
     
-    let speed = 0.5;
     if (analyser) {
         analyser.getByteFrequencyData(dataArray);
         const bass = dataArray[2];
-        speed = 0.5 + (bass / 40); // Warp speed based on bass
+        const mid = dataArray[10];
         
-        // Update Frequency Hex Display
         document.getElementById('freq-hex').innerText = `0x${bass.toString(16).toUpperCase()}`;
+        document.getElementById('stability').innerText = `${(100 - (bass/20)).toFixed(1)}%`;
 
-        if (bass > 220) {
-            document.body.classList.add('bass-kick');
-            stars.material.color.setHex(0x00f2ff);
+        // DRAW MINI VISUALIZER
+        vCtx.clearRect(0,0, vCanvas.width, vCanvas.height);
+        vCtx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary');
+        for(let i=0; i<30; i++) {
+            let h = (dataArray[i*2]/255) * vCanvas.height;
+            vCtx.fillRect(i*7, vCanvas.height - h, 4, h);
+        }
+
+        // REALM PHYSICS
+        if (currentRealm === 'red') {
+            particles.rotation.y += 0.05; // Vortex
+            particles.rotation.z += (bass/1000);
+        } else if (currentRealm === 'gold') {
+            particles.position.y = Math.sin(Date.now()*0.001) * 20; // Drifting
+            particles.rotation.y += 0.001;
+        } else if (currentRealm === 'blue') {
+            camera.position.z = 200 + (bass/4); // Smooth Warp
         } else {
-            document.body.classList.remove('bass-kick');
-            stars.material.color.setHex(0xffffff);
+            particles.rotation.y += 0.005; // Standard Spin
         }
     }
-
-    // Move Stars (Warp Drive Effect)
-    const positions = stars.geometry.attributes.position.array;
-    for (let i = 1; i < positions.length; i += 3) {
-        positions[i] -= speed;
-        if (positions[i] < -300) positions[i] = 300;
-    }
-    stars.geometry.attributes.position.needsUpdate = true;
-    
     renderer.render(scene, camera);
 }
-
-// Global filter helper (can be expanded later)
-window.filterNodes = (type) => {
-    addLog(`FILTER APPLIED: ${type.toUpperCase()}`);
-};
 
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
