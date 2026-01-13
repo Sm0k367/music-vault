@@ -1,6 +1,6 @@
 /**
- * THE MATRIX OF SMOKE // VIRAL ENGINE v7.2
- * FIXED: Audio Routing & Interaction Lock
+ * THE MATRIX OF SMOKE // MULTIVERSE ENGINE v8.0
+ * Deep Procedural Logic & Cross-Device Optimization
  */
 
 const SONGS = [
@@ -33,27 +33,26 @@ const SONGS = [
 ];
 
 let scene, camera, renderer, particles, analyser, dataArray, audioCtx;
+let currentSeed = 0;
 const audio = document.getElementById('audio-master');
 const vCanvas = document.getElementById('analyser-render');
 const vCtx = vCanvas.getContext('2d');
 
-// --- 1. BOOT SEQUENCE ---
+// --- 1. BOOT ENGINE ---
 window.addEventListener('load', () => {
     let p = 0;
     const loader = setInterval(() => {
-        p += Math.random() * 10;
+        p += Math.random() * 15;
         document.getElementById('load-bar').style.width = Math.min(p, 100) + "%";
         if (p >= 100) {
             clearInterval(loader);
             document.getElementById('ignite-btn').style.display = "block";
-            document.getElementById('boot-status').innerText = "NEURAL LINK READY";
+            document.getElementById('boot-status').innerText = "CALIBRATION COMPLETE";
         }
-    }, 80);
+    }, 50);
 });
 
-// --- 2. THE IGNITION (CRITICAL FOR AUDIO) ---
 document.getElementById('ignite-btn').addEventListener('click', async () => {
-    // UNLOCK AUDIO CONTEXT
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         analyser = audioCtx.createAnalyser();
@@ -63,120 +62,129 @@ document.getElementById('ignite-btn').addEventListener('click', async () => {
         analyser.fftSize = 64;
         dataArray = new Uint8Array(analyser.frequencyBinCount);
     }
-    
     await audioCtx.resume();
-    
     initThree();
     populateList();
-    
-    gsap.to("#boot-overlay", { 
-        opacity: 0, 
-        duration: 1.2, 
-        onComplete: () => document.getElementById('boot-overlay').style.display = 'none' 
-    });
-    
-    addLog("SYSTEM_ONLINE");
+    gsap.to("#boot-overlay", { opacity: 0, duration: 1, onComplete: () => document.getElementById('boot-overlay').style.display = 'none' });
 });
 
-// --- 3. 3D ENGINE ---
+// --- 2. THE GEOMETRY FACTORY ---
 function initThree() {
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
-    camera.position.z = 600;
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+    camera.position.z = 800;
 
     renderer = new THREE.WebGLRenderer({ 
         canvas: document.getElementById('world-canvas'), 
-        antialias: true,
+        antialias: true, 
         preserveDrawingBuffer: true 
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    const geo = new THREE.BufferGeometry();
-    const pos = [];
-    for (let i = 0; i < 10000; i++) {
-        pos.push(Math.random() * 2000 - 1000, Math.random() * 2000 - 1000, Math.random() * 2000 - 1000);
-    }
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    
-    const mat = new THREE.PointsMaterial({ size: 2, color: 0x00f2ff, transparent: true, opacity: 0.7 });
-    particles = new THREE.Points(geo, mat);
-    scene.add(particles);
-
+    buildUniverse("BOOTUP");
     animate();
 }
 
-// --- 4. LIST & DNA LOGIC ---
+function buildUniverse(songTitle) {
+    if (particles) scene.remove(particles);
+    
+    // Create Hash from Title
+    let hash = 0;
+    for (let i = 0; i < songTitle.length; i++) hash = songTitle.charCodeAt(i) + ((hash << 5) - hash);
+    currentSeed = Math.abs(hash);
+    
+    const color = `#${Math.abs(hash & 0x00FFFFFF).toString(16).padStart(6, '0')}`;
+    document.documentElement.style.setProperty('--neon', color);
+    document.getElementById('dna-seed').innerText = `0x${currentSeed.toString(16).toUpperCase().slice(0,6)}`;
+
+    const geo = new THREE.BufferGeometry();
+    const pos = [];
+    const mode = currentSeed % 4; // 4 Distinct Universe Types
+    const count = 12000;
+
+    for (let i = 0; i < count; i++) {
+        if (mode === 0) { // NEBULA
+            pos.push(Math.random()*1600-800, Math.random()*1600-800, Math.random()*1600-800);
+            document.getElementById('realm-type').innerText = "NEBULA";
+        } else if (mode === 1) { // DNA HELIX
+            const t = i / 100;
+            const r = 150;
+            pos.push(r * Math.cos(t), t * 10 - 500, r * Math.sin(t));
+            document.getElementById('realm-type').innerText = "DNA_HELIX";
+        } else if (mode === 2) { // TORUS PULSE
+            const u = Math.random() * Math.PI * 2;
+            const v = Math.random() * Math.PI * 2;
+            const R = 300, rr = 100;
+            pos.push((R + rr * Math.cos(v)) * Math.cos(u), (R + rr * Math.cos(v)) * Math.sin(u), rr * Math.sin(v));
+            document.getElementById('realm-type').innerText = "TORUS";
+        } else { // DIGITAL GRID
+            pos.push((i % 100) * 20 - 1000, (Math.random()*10), Math.floor(i / 100) * 20 - 1000);
+            document.getElementById('realm-type').innerText = "CYBER_GRID";
+        }
+    }
+
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    const mat = new THREE.PointsMaterial({ size: 3, color: color, transparent: true, opacity: 0.8 });
+    particles = new THREE.Points(geo, mat);
+    scene.add(particles);
+}
+
+// --- 3. UI & AUDIO SYNC ---
 function populateList() {
     const list = document.getElementById('song-list');
-    SONGS.forEach(song => {
+    SONGS.forEach(s => {
         const d = document.createElement('div');
         d.className = 'song-node';
-        d.innerText = song.replace('.mp3', '').toUpperCase();
-        d.onclick = () => playTrack(song);
+        d.innerText = s.replace('.mp3', '').toUpperCase();
+        d.onclick = () => {
+            audio.src = s;
+            audio.play();
+            document.getElementById('current-track').innerText = s.toUpperCase();
+            buildUniverse(s);
+        };
         list.appendChild(d);
     });
 }
 
-function playTrack(file) {
-    audio.src = file;
-    audio.play();
-    document.getElementById('current-track').innerText = file.toUpperCase();
-    
-    // Generate DNA Seed
-    let hash = 0;
-    for (let i = 0; i < file.length; i++) hash = file.charCodeAt(i) + ((hash << 5) - hash);
-    const color = `#${Math.abs(hash & 0x00FFFFFF).toString(16).padStart(6, '0')}`;
-    
-    document.getElementById('dna-seed').innerText = `0x${Math.abs(hash).toString(16).toUpperCase()}`;
-    document.documentElement.style.setProperty('--neon', color);
-    particles.material.color.set(color);
-    
-    addLog(`STREAMING_NODE: ${file}`);
-}
-
-// --- 5. RENDER & VISUALIZER LOOP ---
 function animate() {
     requestAnimationFrame(animate);
-    
     if (particles) {
-        particles.rotation.y += 0.002;
-        particles.rotation.x += 0.001;
-
+        particles.rotation.y += 0.001;
         if (analyser) {
             analyser.getByteFrequencyData(dataArray);
             const bass = dataArray[2];
+            document.getElementById('sync-val').innerText = (bass/10).toFixed(2);
             
-            // Pulse particles to bass
-            const s = 1 + (bass / 300);
+            // Scaled Pulsing
+            const s = 1 + (bass / 400);
             particles.scale.set(s, s, s);
-            document.getElementById('sync-val').innerText = (bass / 10).toFixed(2);
 
-            // Draw mini visualizer
-            vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
+            // Draw Visualizer
+            vCtx.clearRect(0,0,vCanvas.width, vCanvas.height);
             vCtx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--neon');
-            for (let i = 0; i < dataArray.length; i++) {
-                const h = (dataArray[i] / 255) * vCanvas.height;
-                vCtx.fillRect(i * 5, vCanvas.height - h, 3, h);
+            for(let i=0; i<32; i++) {
+                let h = (dataArray[i]/255) * vCanvas.height;
+                vCtx.fillRect(i*4, vCanvas.height - h, 2, h);
             }
         }
     }
-    
     renderer.render(scene, camera);
 }
 
-function addLog(m) {
-    const log = document.getElementById('system-logs');
-    const e = document.createElement('div');
-    e.innerText = `> ${m}`;
-    log.prepend(e);
-}
-
-// Handle DNA Share
+// --- 4. SHARE DNA (FIXED) ---
 document.getElementById('share-dna-btn').onclick = () => {
-    const url = renderer.domElement.toDataURL("image/png");
-    document.getElementById('dna-card-image').src = url;
+    // We capture the frame BEFORE opening the popup
+    renderer.render(scene, camera);
+    const dataURL = renderer.domElement.toDataURL("image/png");
+    const img = document.getElementById('dna-card-image');
+    img.src = dataURL;
+    document.getElementById('download-dna').href = dataURL;
     document.getElementById('dna-card-popup').style.display = 'flex';
+};
+
+document.getElementById('close-popup').onclick = () => {
+    document.getElementById('dna-card-popup').style.display = 'none';
 };
 
 window.addEventListener('resize', () => {
