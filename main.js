@@ -1,5 +1,5 @@
 /**
- * THE MATRIX OF SMOKE // MULTI-VERSE ENGINE v5.0
+ * THE MATRIX OF SMOKE // PROCEDURAL DNA ENGINE v6.0
  * Architect: DJ SMOKE STREAM
  */
 
@@ -33,21 +33,88 @@ const SONGS = [
 ];
 
 let scene, camera, renderer, particles, analyser, dataArray;
-let currentRealm = 'neutral';
+let currentDNA = { color: '#00f2ff', velocity: 0.5, density: 5000, drift: 0.01 };
 const audio = document.getElementById('audio-master');
-const vCanvas = document.getElementById('analyser-render');
-const vCtx = vCanvas.getContext('2d');
 
-// --- 1. BOOT LOGIC ---
+// --- 1. DNA SEED GENERATOR ---
+function generateSeed(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return hash;
+}
+
+function applyDNA(songName) {
+    const seed = generateSeed(songName);
+    
+    // Generate Unique Hex Color
+    const color = `#${Math.abs(seed & 0x00FFFFFF).toString(16).padStart(6, '0')}`;
+    
+    // Derive Physics from Seed
+    const velocity = 0.2 + (Math.abs(seed % 100) / 50); // 0.2 to 2.2
+    const density = 2000 + (Math.abs(seed % 8000));   // 2k to 10k particles
+    const drift = (seed % 10) / 200;                  // Camera sway speed
+    
+    currentDNA = { color, velocity, density, drift };
+
+    // Update UI
+    document.getElementById('dna-seed').innerText = `0x${Math.abs(seed).toString(16).toUpperCase()}`;
+    document.documentElement.style.setProperty('--dna-color', color);
+    gsap.to('#stat-vel', { width: (velocity / 2.2 * 100) + "%", duration: 1 });
+    gsap.to('#stat-den', { width: (density / 10000 * 100) + "%", duration: 1 });
+
+    // Update 3D Geometry
+    update3DSpace(seed);
+    addLog(`DNA_DECODED: ${color}`);
+}
+
+// --- 2. 3D SPACE MANAGEMENT ---
+function initThree() {
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('world-canvas'), antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.position.z = 250;
+    animate();
+}
+
+function update3DSpace(seed) {
+    if (particles) scene.remove(particles);
+
+    const geo = new THREE.BufferGeometry();
+    const pos = [];
+    const count = currentDNA.density;
+
+    // Use seed to determine Shape (Spherical vs Box vs Torus)
+    const shapeMode = Math.abs(seed % 3); 
+
+    for (let i = 0; i < count; i++) {
+        if (shapeMode === 0) { // Sphere
+            const phi = Math.acos(-1 + (2 * i) / count);
+            const theta = Math.sqrt(count * Math.PI) * phi;
+            pos.push(200 * Math.cos(theta) * Math.sin(phi), 200 * Math.sin(theta) * Math.sin(phi), 200 * Math.cos(phi));
+        } else { // Chaos/Starfield
+            pos.push(Math.random() * 800 - 400, Math.random() * 800 - 400, Math.random() * 800 - 400);
+        }
+    }
+
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    const mat = new THREE.PointsMaterial({ size: 1.5, color: currentDNA.color, transparent: true, opacity: 0.8 });
+    particles = new THREE.Points(geo, mat);
+    scene.add(particles);
+}
+
+// --- 3. SYSTEM BOOT ---
 window.addEventListener('load', () => {
-    let p = 0;
+    let progress = 0;
     const loader = setInterval(() => {
-        p += Math.random() * 20;
-        document.getElementById('load-bar').style.width = Math.min(p, 100) + "%";
-        if(p >= 100) {
+        progress += 10;
+        document.getElementById('load-bar').style.width = progress + "%";
+        if (progress >= 100) {
             clearInterval(loader);
-            document.getElementById('boot-status').innerText = "MULTIVERSE SYNC COMPLETE.";
             document.getElementById('ignite-btn').style.display = "block";
+            document.getElementById('boot-status').innerText = "DNA SEQUENCE READY.";
         }
     }, 100);
 });
@@ -58,29 +125,9 @@ document.getElementById('ignite-btn').addEventListener('click', () => {
     populateList();
     gsap.to("#boot-overlay", { opacity: 0, duration: 1, onComplete: () => {
         document.getElementById('boot-overlay').style.display = 'none';
-        addLog("SYSTEM: MULTIVERSE_LINK_STABLE");
+        addLog("OS_ONLINE: SYNC_ESTABLISHED");
     }});
 });
-
-// --- 2. THE THREE.JS REALM ENGINE ---
-function initThree() {
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('world-canvas'), antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    const geo = new THREE.BufferGeometry();
-    const pos = [];
-    for(let i=0; i<15000; i++) pos.push(Math.random()*800-400, Math.random()*800-400, Math.random()*800-400);
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    
-    const mat = new THREE.PointsMaterial({ size: 1.5, transparent: true, opacity: 0.8, color: 0x00f2ff });
-    particles = new THREE.Points(geo, mat);
-    scene.add(particles);
-    camera.position.z = 200;
-
-    animate();
-}
 
 function initAudio() {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -90,25 +137,6 @@ function initAudio() {
     analyser.connect(ctx.destination);
     analyser.fftSize = 256;
     dataArray = new Uint8Array(analyser.frequencyBinCount);
-}
-
-// --- 3. REALM SELECTION LOGIC ---
-function setRealm(trackName) {
-    const name = trackName.toLowerCase();
-    let theme = 'neutral';
-    
-    if (name.includes('money') || name.includes('gold') || name.includes('rich')) theme = 'gold';
-    else if (name.includes('lounge') || name.includes('midnight') || name.includes('dreams')) theme = 'blue';
-    else if (name.includes('crunk') || name.includes('dirty') || name.includes('shock') || name.includes('heat')) theme = 'red';
-    else if (name.includes('techno') || name.includes('pulse') || name.includes('digital')) theme = 'emerald';
-
-    document.body.className = `realm-${theme}`;
-    document.getElementById('current-realm').innerText = theme.toUpperCase();
-    currentRealm = theme;
-    
-    // Change Particle Color based on theme
-    const colors = { gold: 0xffcc00, blue: 0x0077ff, red: 0xff0044, emerald: 0x00ff88, neutral: 0x00f2ff };
-    gsap.to(particles.material.color, { r: new THREE.Color(colors[theme]).r, g: new THREE.Color(colors[theme]).g, b: new THREE.Color(colors[theme]).b, duration: 2 });
 }
 
 function populateList() {
@@ -121,9 +149,8 @@ function populateList() {
             audio.src = s;
             audio.play();
             document.getElementById('current-track').innerText = s.toUpperCase();
-            document.getElementById('track-sub').innerText = "PLAYING FROM SMOKE_STREAM_OS";
-            setRealm(s);
-            addLog(`NODE_LINK: ${s}`);
+            document.getElementById('track-sub').innerText = `DNA_SYNC: ${s}`;
+            applyDNA(s);
         };
         list.appendChild(d);
     });
@@ -133,40 +160,28 @@ function addLog(m) {
     const e = document.createElement('div');
     e.className = 'log-entry';
     e.innerText = `> ${m}`;
-    logContainer.prepend(e);
+    document.getElementById('system-logs').prepend(e);
 }
 
-// --- 4. ANIMATION LOOP (Surgical Movement) ---
+// --- 4. ANIMATION LOOP ---
 function animate() {
     requestAnimationFrame(animate);
-    
-    if (analyser) {
-        analyser.getByteFrequencyData(dataArray);
-        const bass = dataArray[2];
-        const mid = dataArray[10];
+    if (particles) {
+        particles.rotation.y += currentDNA.drift;
+        particles.rotation.x += currentDNA.drift / 2;
         
-        document.getElementById('freq-hex').innerText = `0x${bass.toString(16).toUpperCase()}`;
-        document.getElementById('stability').innerText = `${(100 - (bass/20)).toFixed(1)}%`;
+        if (analyser) {
+            analyser.getByteFrequencyData(dataArray);
+            const bass = dataArray[2];
+            const scale = 1 + (bass / 500);
+            particles.scale.set(scale, scale, scale);
+            
+            // Sync Stability Readout
+            document.getElementById('sync-val').innerText = (bass / 10).toFixed(2);
 
-        // DRAW MINI VISUALIZER
-        vCtx.clearRect(0,0, vCanvas.width, vCanvas.height);
-        vCtx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary');
-        for(let i=0; i<30; i++) {
-            let h = (dataArray[i*2]/255) * vCanvas.height;
-            vCtx.fillRect(i*7, vCanvas.height - h, 4, h);
-        }
-
-        // REALM PHYSICS
-        if (currentRealm === 'red') {
-            particles.rotation.y += 0.05; // Vortex
-            particles.rotation.z += (bass/1000);
-        } else if (currentRealm === 'gold') {
-            particles.position.y = Math.sin(Date.now()*0.001) * 20; // Drifting
-            particles.rotation.y += 0.001;
-        } else if (currentRealm === 'blue') {
-            camera.position.z = 200 + (bass/4); // Smooth Warp
-        } else {
-            particles.rotation.y += 0.005; // Standard Spin
+            // Subtle dock pulse
+            if (bass > 200) document.querySelector('.bottom-dock').classList.add('bass-sync');
+            else document.querySelector('.bottom-dock').classList.remove('bass-sync');
         }
     }
     renderer.render(scene, camera);
