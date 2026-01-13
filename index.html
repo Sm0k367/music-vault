@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE MATRIX OF SMOKE // MULTI-VERSE OS</title>
+    <title>THE MATRIX OF SMOKE // PROCEDURAL OS</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -12,10 +12,10 @@
 
     <div id="boot-overlay">
         <div class="glitch-container">
-            <h1 class="system-title">DJ_SMOKE_STREAM_OS</h1>
+            <h1 class="system-title">SMOKE_STREAM_OS</h1>
             <div class="load-bar-container"><div id="load-bar"></div></div>
-            <p id="boot-status">MAPPING MULTIVERSE NODES...</p>
-            <button id="ignite-btn" style="display:none;">CONNECT NEURAL LINK</button>
+            <p id="boot-status">GENERATING PROCEDURAL GEOMETRIES...</p>
+            <button id="ignite-btn" style="display:none;">INITIALIZE NEURAL LINK</button>
         </div>
     </div>
 
@@ -23,28 +23,37 @@
 
     <div id="hud-interface">
         <header>
-            <div class="system-time">CORE_STABILITY: <span id="stability">100%</span></div>
-            <div class="active-node">REALM: <span id="current-realm">NEUTRAL</span></div>
+            <div class="system-status">CORE_SYNC: <span id="sync-val">0.00</span>ms</div>
+            <div class="active-node">DNA_SEED: <span id="dna-seed">0x000000</span></div>
         </header>
 
         <aside id="system-logs">
-            <div class="log-entry">> CORE_READY</div>
+            <div class="log-entry">> KERNEL_LOADED</div>
         </aside>
 
         <nav id="node-directory">
-            <div class="filter-tabs">
-                <button onclick="filterNodes('all')">ALL_DATA</button>
-            </div>
+            <div class="directory-header">NODE_ARCHIVE [67_TRACKS]</div>
             <div id="song-list"></div>
         </nav>
 
         <div class="bottom-dock">
             <div class="track-meta">
-                <h2 id="current-track">SELECT NODE</h2>
-                <p id="track-sub">WAITING FOR SELECTION...</p>
+                <h2 id="current-track">SYSTEM_IDLE</h2>
+                <p id="track-sub">WAITING FOR SEED INPUT...</p>
             </div>
+            
+            <div class="visual-meta">
+                <div class="meta-box">
+                    <span class="label">VELOCITY</span>
+                    <div class="stat-bar"><div id="stat-vel" class="fill"></div></div>
+                </div>
+                <div class="meta-box">
+                    <span class="label">DENSITY</span>
+                    <div class="stat-bar"><div id="stat-den" class="fill"></div></div>
+                </div>
+            </div>
+
             <div class="mini-visualizer">
-                <div id="freq-hex">0x00</div>
                 <canvas id="analyser-render"></canvas>
             </div>
         </div>
