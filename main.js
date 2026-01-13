@@ -1,6 +1,6 @@
 /**
- * THE MATRIX OF SMOKE // VIRAL ENGINE v7.1
- * Stable Build - 2026 Edition
+ * THE MATRIX OF SMOKE // VIRAL ENGINE v7.2
+ * FIXED: Audio Routing & Interaction Lock
  */
 
 const SONGS = [
@@ -32,175 +32,151 @@ const SONGS = [
     "Orion's 420 High Way_.mp3", "Lounge.mp3"
 ];
 
-let scene, camera, renderer, particles, analyser, dataArray;
-let currentDNA = { color: '#00f2ff', velocity: 0.5, seed: 0 };
-let inputBuffer = "";
+let scene, camera, renderer, particles, analyser, dataArray, audioCtx;
 const audio = document.getElementById('audio-master');
+const vCanvas = document.getElementById('analyser-render');
+const vCtx = vCanvas.getContext('2d');
 
-// --- 1. SYSTEM BOOT & INITIALIZATION ---
+// --- 1. BOOT SEQUENCE ---
 window.addEventListener('load', () => {
-    let progress = 0;
+    let p = 0;
     const loader = setInterval(() => {
-        progress += 5;
-        document.getElementById('load-bar').style.width = progress + "%";
-        if (progress >= 100) {
+        p += Math.random() * 10;
+        document.getElementById('load-bar').style.width = Math.min(p, 100) + "%";
+        if (p >= 100) {
             clearInterval(loader);
             document.getElementById('ignite-btn').style.display = "block";
-            document.getElementById('boot-status').innerText = "SYSTEM READY.";
+            document.getElementById('boot-status').innerText = "NEURAL LINK READY";
         }
-    }, 50);
+    }, 80);
 });
 
-document.getElementById('ignite-btn').addEventListener('click', () => {
+// --- 2. THE IGNITION (CRITICAL FOR AUDIO) ---
+document.getElementById('ignite-btn').addEventListener('click', async () => {
+    // UNLOCK AUDIO CONTEXT
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        const source = audioCtx.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        analyser.fftSize = 64;
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+    }
+    
+    await audioCtx.resume();
+    
     initThree();
-    initAudio();
     populateList();
-    gsap.to("#boot-overlay", { opacity: 0, duration: 1, onComplete: () => {
-        document.getElementById('boot-overlay').style.display = 'none';
-        addLog("LINK_ESTABLISHED");
-    }});
+    
+    gsap.to("#boot-overlay", { 
+        opacity: 0, 
+        duration: 1.2, 
+        onComplete: () => document.getElementById('boot-overlay').style.display = 'none' 
+    });
+    
+    addLog("SYSTEM_ONLINE");
 });
 
-// --- 2. THE THREE.JS ENGINE ---
+// --- 3. 3D ENGINE ---
 function initThree() {
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+    camera.position.z = 600;
+
     renderer = new THREE.WebGLRenderer({ 
         canvas: document.getElementById('world-canvas'), 
         antialias: true,
-        preserveDrawingBuffer: true // Required for DNA screenshots
+        preserveDrawingBuffer: true 
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.position.z = 500;
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    const geo = new THREE.BufferGeometry();
+    const pos = [];
+    for (let i = 0; i < 10000; i++) {
+        pos.push(Math.random() * 2000 - 1000, Math.random() * 2000 - 1000, Math.random() * 2000 - 1000);
+    }
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
     
-    // Initial Starfield
-    update3DSpace(12345);
+    const mat = new THREE.PointsMaterial({ size: 2, color: 0x00f2ff, transparent: true, opacity: 0.7 });
+    particles = new THREE.Points(geo, mat);
+    scene.add(particles);
+
     animate();
 }
 
-function update3DSpace(seed) {
-    if (particles) scene.remove(particles);
-    
-    const geo = new THREE.BufferGeometry();
-    const pos = [];
-    const count = 8000;
-
-    for (let i = 0; i < count; i++) {
-        pos.push(Math.random() * 2000 - 1000, Math.random() * 2000 - 1000, Math.random() * 2000 - 1000);
-    }
-
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    const mat = new THREE.PointsMaterial({ 
-        size: 2, 
-        color: currentDNA.color, 
-        transparent: true, 
-        opacity: 0.8 
-    });
-    particles = new THREE.Points(geo, mat);
-    scene.add(particles);
-}
-
-// --- 3. DNA & VIRAL LOGIC ---
-function generateDNA(songName) {
-    let hash = 0;
-    for (let i = 0; i < songName.length; i++) hash = songName.charCodeAt(i) + ((hash << 5) - hash);
-    const color = `#${Math.abs(hash & 0x00FFFFFF).toString(16).padStart(6, '0')}`;
-    
-    currentDNA = {
-        color: color,
-        velocity: 0.5 + (Math.abs(hash % 100) / 20),
-        seed: hash
-    };
-
-    // Update UI
-    document.getElementById('dna-seed').innerText = `0x${Math.abs(hash).toString(16).toUpperCase()}`;
-    document.documentElement.style.setProperty('--dna-color', color);
-    document.getElementById('stat-vel').style.width = (currentDNA.velocity * 10) + "%";
-    document.getElementById('stat-den').style.width = "85%";
-    
-    update3DSpace(hash);
-}
-
-// Keyboard Listeners (Easter Eggs)
-window.addEventListener('keydown', (e) => {
-    inputBuffer += e.key.toUpperCase();
-    if (inputBuffer.length > 10) inputBuffer = inputBuffer.substring(1);
-
-    if (inputBuffer.includes("MONEY")) {
-        document.body.className = "fx-whale";
-        addLog("EVENT: WHALE_MODE");
-    }
-    if (inputBuffer.includes("H")) {
-        document.body.className = "fx-420";
-        addLog("EVENT: HIGH_PLANE");
-    }
-});
-
-// --- 4. AUDIO & INTERFACE ---
-function initAudio() {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    const context = new AudioContext();
-    analyser = context.createAnalyser();
-    const source = context.createMediaElementSource(audio);
-    source.connect(analyser);
-    analyser.connect(context.destination);
-    dataArray = new Uint8Array(analyser.frequencyBinCount);
-}
-
+// --- 4. LIST & DNA LOGIC ---
 function populateList() {
     const list = document.getElementById('song-list');
     SONGS.forEach(song => {
-        const div = document.createElement('div');
-        div.className = 'song-node';
-        div.innerText = song.replace('.mp3', '').toUpperCase();
-        div.onclick = () => {
-            audio.src = song;
-            audio.play();
-            document.getElementById('current-track').innerText = song.toUpperCase();
-            generateDNA(song);
-            addLog(`STREAMING: ${song}`);
-        };
-        list.appendChild(div);
+        const d = document.createElement('div');
+        d.className = 'song-node';
+        d.innerText = song.replace('.mp3', '').toUpperCase();
+        d.onclick = () => playTrack(song);
+        list.appendChild(d);
     });
 }
 
-function addLog(msg) {
-    const log = document.getElementById('system-logs');
-    const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    entry.innerText = `> ${msg}`;
-    log.prepend(entry);
+function playTrack(file) {
+    audio.src = file;
+    audio.play();
+    document.getElementById('current-track').innerText = file.toUpperCase();
+    
+    // Generate DNA Seed
+    let hash = 0;
+    for (let i = 0; i < file.length; i++) hash = file.charCodeAt(i) + ((hash << 5) - hash);
+    const color = `#${Math.abs(hash & 0x00FFFFFF).toString(16).padStart(6, '0')}`;
+    
+    document.getElementById('dna-seed').innerText = `0x${Math.abs(hash).toString(16).toUpperCase()}`;
+    document.documentElement.style.setProperty('--neon', color);
+    particles.material.color.set(color);
+    
+    addLog(`STREAMING_NODE: ${file}`);
 }
 
-// --- 5. THE RENDER LOOP ---
+// --- 5. RENDER & VISUALIZER LOOP ---
 function animate() {
     requestAnimationFrame(animate);
     
     if (particles) {
-        particles.rotation.y += 0.001 * currentDNA.velocity;
-        particles.rotation.x += 0.0005;
+        particles.rotation.y += 0.002;
+        particles.rotation.x += 0.001;
 
         if (analyser) {
             analyser.getByteFrequencyData(dataArray);
             const bass = dataArray[2];
-            const scale = 1 + (bass / 500);
-            particles.scale.set(scale, scale, scale);
+            
+            // Pulse particles to bass
+            const s = 1 + (bass / 300);
+            particles.scale.set(s, s, s);
             document.getElementById('sync-val').innerText = (bass / 10).toFixed(2);
+
+            // Draw mini visualizer
+            vCtx.clearRect(0, 0, vCanvas.width, vCanvas.height);
+            vCtx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--neon');
+            for (let i = 0; i < dataArray.length; i++) {
+                const h = (dataArray[i] / 255) * vCanvas.height;
+                vCtx.fillRect(i * 5, vCanvas.height - h, 3, h);
+            }
         }
     }
+    
     renderer.render(scene, camera);
 }
 
-// Share Button Logic
-document.getElementById('share-dna-btn').addEventListener('click', () => {
-    const dataURL = renderer.domElement.toDataURL("image/png");
-    document.getElementById('dna-card-image').src = dataURL;
-    document.getElementById('download-dna').href = dataURL;
-    document.getElementById('dna-card-popup').style.display = "flex";
-});
+function addLog(m) {
+    const log = document.getElementById('system-logs');
+    const e = document.createElement('div');
+    e.innerText = `> ${m}`;
+    log.prepend(e);
+}
 
-document.getElementById('close-dna-popup').onclick = () => {
-    document.getElementById('dna-card-popup').style.display = "none";
+// Handle DNA Share
+document.getElementById('share-dna-btn').onclick = () => {
+    const url = renderer.domElement.toDataURL("image/png");
+    document.getElementById('dna-card-image').src = url;
+    document.getElementById('dna-card-popup').style.display = 'flex';
 };
 
 window.addEventListener('resize', () => {
