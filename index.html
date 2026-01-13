@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE MATRIX OF SMOKE // VIRAL OS</title>
+    <title>THE MATRIX OF SMOKE // DJ SMOKE STREAM</title>
+    <style>body { background: #000; margin: 0; overflow: hidden; color: #00f2ff; }</style>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -12,10 +13,12 @@
 
     <div id="boot-overlay">
         <div class="glitch-container">
-            <h1 class="system-title">SMOKE_STREAM_OS</h1>
+            <h1 class="system-title" data-text="SMOKE_STREAM_OS">SMOKE_STREAM_OS</h1>
             <div class="load-bar-container"><div id="load-bar"></div></div>
-            <p id="boot-status">INITIALIZING VIRAL PROTOCOLS...</p>
-            <button id="ignite-btn" style="display:none;">ACTIVATE NEURAL LINK</button>
+            <p id="boot-status">ENCRYPTING MULTIVERSE NODES...</p>
+            <div id="btn-wrapper">
+                <button id="ignite-btn" style="display:none;">INITIALIZE NEURAL LINK</button>
+            </div>
         </div>
     </div>
 
@@ -23,14 +26,12 @@
 
     <div id="hud-interface">
         <header>
-            <div class="system-status">CORE_SYNC: <span id="sync-val">0.00</span>ms</div>
+            <div class="system-status">SYNC: <span id="sync-val">0.00</span></div>
             <div class="active-node">DNA_SEED: <span id="dna-seed">0x000000</span></div>
-            <div class="effect-status">FX_MODE: <span id="fx-mode">NORMAL</span></div>
+            <div class="effect-status">FX: <span id="fx-mode">IDLE</span></div>
         </header>
 
-        <aside id="system-logs">
-            <div class="log-entry">> KERNEL_LOADED</div>
-        </aside>
+        <aside id="system-logs"></aside>
 
         <nav id="node-directory">
             <div class="directory-header">NODE_ARCHIVE [67_TRACKS]</div>
@@ -39,38 +40,28 @@
 
         <div class="bottom-dock">
             <div class="track-meta">
-                <h2 id="current-track">SYSTEM_IDLE</h2>
-                <p id="track-sub">WAITING FOR SEED INPUT...</p>
+                <h2 id="current-track">SYSTEM_READY</h2>
+                <p id="track-sub">SELECT AUDIO FREQUENCY TO BEGIN</p>
             </div>
             
-            <div class="visual-meta">
-                <div class="meta-box">
-                    <span class="label">VELOCITY</span>
-                    <div class="stat-bar"><div id="stat-vel" class="fill"></div></div>
-                </div>
-                <div class="meta-box">
-                    <span class="label">DENSITY</span>
-                    <div class="stat-bar"><div id="stat-den" class="fill"></div></div>
-                </div>
-            </div>
-
             <div class="mini-visualizer">
                 <canvas id="analyser-render"></canvas>
             </div>
-            <button id="share-dna-btn">SHARE DNA</button>
+            <button id="share-dna-btn">SHARE_DNA</button>
         </div>
     </div>
 
     <div id="dna-card-popup" style="display:none;">
-        <img id="dna-card-image" src="" alt="Shareable DNA Card">
-        <div class="share-buttons">
-            <a id="download-dna" download="dj_smoke_stream_dna.png">DOWNLOAD</a>
-            <button id="close-dna-popup">CLOSE</button>
+        <div class="popup-content">
+            <img id="dna-card-image" src="">
+            <div class="share-buttons">
+                <a id="download-dna" download="smoke_dna.png">DOWNLOAD</a>
+                <button onclick="document.getElementById('dna-card-popup').style.display='none'">CLOSE</button>
+            </div>
         </div>
     </div>
 
     <canvas id="share-canvas" style="display:none;"></canvas>
-
     <audio id="audio-master" crossorigin="anonymous"></audio>
 
     <script src="main.js"></script>
