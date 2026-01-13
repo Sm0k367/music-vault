@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE MATRIX OF SMOKE // DJ SMOKE STREAM OS</title>
+    <title>THE MATRIX OF SMOKE // MULTI-VERSE OS</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -12,12 +12,10 @@
 
     <div id="boot-overlay">
         <div class="glitch-container">
-            <h1 class="system-title">SMOKE_STREAM_OS_v4.20</h1>
-            <div class="load-bar-container">
-                <div id="load-bar"></div>
-            </div>
-            <p id="boot-status">SCANNING DISK FOR 67 MP3 NODES...</p>
-            <button id="ignite-btn" style="display:none;">INITIALIZE NEURAL LINK</button>
+            <h1 class="system-title">DJ_SMOKE_STREAM_OS</h1>
+            <div class="load-bar-container"><div id="load-bar"></div></div>
+            <p id="boot-status">MAPPING MULTIVERSE NODES...</p>
+            <button id="ignite-btn" style="display:none;">CONNECT NEURAL LINK</button>
         </div>
     </div>
 
@@ -25,28 +23,30 @@
 
     <div id="hud-interface">
         <header>
-            <div class="system-time">ID: SM0K3_67 // <span id="clock">00:00:00</span></div>
-            <div class="active-node">NODE: <span id="current-track">IDLE</span></div>
+            <div class="system-time">CORE_STABILITY: <span id="stability">100%</span></div>
+            <div class="active-node">REALM: <span id="current-realm">NEUTRAL</span></div>
         </header>
 
         <aside id="system-logs">
-            <div class="log-entry">> WAITING FOR SELECTION...</div>
+            <div class="log-entry">> CORE_READY</div>
         </aside>
 
         <nav id="node-directory">
             <div class="filter-tabs">
-                <button onclick="filterNodes('all')">ALL</button>
-                <button onclick="filterNodes('crunk')">CRUNK</button>
-                <button onclick="filterNodes('techno')">TECHNO</button>
-                <button onclick="filterNodes('smoke')">SMOKE</button>
+                <button onclick="filterNodes('all')">ALL_DATA</button>
             </div>
-            <div id="song-list">
-                </div>
+            <div id="song-list"></div>
         </nav>
 
-        <div class="visualizer-container">
-            <div id="freq-hex"></div>
-            <canvas id="analyser-render"></canvas>
+        <div class="bottom-dock">
+            <div class="track-meta">
+                <h2 id="current-track">SELECT NODE</h2>
+                <p id="track-sub">WAITING FOR SELECTION...</p>
+            </div>
+            <div class="mini-visualizer">
+                <div id="freq-hex">0x00</div>
+                <canvas id="analyser-render"></canvas>
+            </div>
         </div>
     </div>
 
