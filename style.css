@@ -1,27 +1,19 @@
-/* --- THE MATRIX OF SMOKE // STABLE MULTIVERSE --- */
+/* --- THE MATRIX OF SMOKE // PROCEDURAL DNA --- */
 :root {
-    --primary: #00f2ff;
-    --accent: #00f2ff;
-    --glass: rgba(0, 0, 0, 0.8);
-    --text: #ffffff;
+    --dna-color: #00f2ff;
+    --glass-bg: rgba(0, 0, 0, 0.85);
+    --border-color: rgba(255, 255, 255, 0.1);
 }
-
-/* REALM THEMES */
-body.realm-gold { --primary: #ffcc00; --accent: #ffae00; }
-body.realm-blue { --primary: #0077ff; --accent: #00d4ff; }
-body.realm-red { --primary: #ff0044; --accent: #ff4d00; }
-body.realm-emerald { --primary: #00ff88; --accent: #00ffcc; }
 
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syncopate:wght@700&display=swap');
 
 body, html {
     margin: 0; padding: 0;
     background: #000;
-    color: var(--primary);
+    color: #fff;
     font-family: 'Share Tech Mono', monospace;
     overflow: hidden;
     height: 100vh;
-    transition: color 1.5s ease; /* Smoothly transitions text colors */
 }
 
 #world-canvas { position: fixed; top: 0; left: 0; z-index: 1; }
@@ -32,72 +24,86 @@ body, html {
     display: flex; align-items: center; justify-content: center; flex-direction: column;
 }
 
-.system-title { font-family: 'Syncopate'; font-size: 1.8rem; letter-spacing: 8px; margin-bottom: 20px; }
-.load-bar-container { width: 300px; height: 2px; background: #111; margin: 20px auto; }
-#load-bar { width: 0%; height: 100%; background: var(--primary); transition: width 0.3s; }
+.system-title { font-family: 'Syncopate'; font-size: 1.5rem; letter-spacing: 10px; color: var(--dna-color); }
+.load-bar-container { width: 400px; height: 1px; background: #222; margin: 30px auto; }
+#load-bar { width: 0%; height: 100%; background: var(--dna-color); box-shadow: 0 0 15px var(--dna-color); }
 
-/* HUD INTERFACE */
+/* HUD ARCHITECTURE */
 #hud-interface {
     position: relative; z-index: 10; height: 100vh;
-    display: flex; flex-direction: column; pointer-events: none; padding: 30px;
+    display: flex; flex-direction: column; pointer-events: none; padding: 40px;
 }
 
 header {
-    display: flex; justify-content: space-between;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
 }
 
+.active-node { color: var(--dna-color); font-weight: bold; }
+
+/* LOGS & DIRECTORY */
 #system-logs {
-    position: absolute; left: 30px; top: 120px; width: 220px; height: 200px;
-    background: var(--glass); border-left: 2px solid var(--primary);
-    padding: 10px; font-size: 0.7rem; pointer-events: auto;
+    position: absolute; left: 40px; top: 120px; width: 240px; height: 180px;
+    background: var(--glass-bg); border-left: 1px solid var(--dna-color);
+    padding: 15px; font-size: 0.65rem; pointer-events: auto; opacity: 0.7;
 }
 
 #node-directory {
-    position: absolute; right: 30px; top: 100px; width: 320px; bottom: 180px;
-    background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(15px); pointer-events: auto; display: flex; flex-direction: column;
+    position: absolute; right: 40px; top: 100px; width: 340px; bottom: 200px;
+    background: var(--glass-bg); border: 1px solid var(--border-color);
+    backdrop-filter: blur(25px); pointer-events: auto; display: flex; flex-direction: column;
 }
 
-#song-list { flex: 1; overflow-y: auto; padding: 10px; }
-#song-list::-webkit-scrollbar { width: 3px; }
-#song-list::-webkit-scrollbar-thumb { background: var(--primary); }
+.directory-header { 
+    padding: 15px; background: rgba(255,255,255,0.05); 
+    font-size: 0.8rem; letter-spacing: 2px; border-bottom: 1px solid var(--border-color);
+}
+
+#song-list { flex: 1; overflow-y: auto; padding: 5px; }
+#song-list::-webkit-scrollbar { width: 2px; }
+#song-list::-webkit-scrollbar-thumb { background: var(--dna-color); }
 
 .song-node {
-    padding: 15px; margin-bottom: 5px; background: rgba(255,255,255,0.02);
-    border: 1px solid transparent; cursor: pointer; transition: 0.3s;
-    color: #888;
+    padding: 12px 20px; margin-bottom: 2px; background: rgba(255,255,255,0.01);
+    cursor: pointer; transition: 0.3s; font-size: 0.85rem; color: #666;
 }
 
 .song-node:hover {
-    background: rgba(255,255,255,0.05); color: var(--primary);
-    border-left: 2px solid var(--primary);
+    background: rgba(255,255,255,0.05); color: var(--dna-color);
+    padding-left: 25px;
 }
 
-/* BOTTOM DOCK (The Controls) */
+/* BOTTOM DOCK & STATS */
 .bottom-dock {
-    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-    width: 90%; background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
-    padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    width: 90%; background: var(--glass-bg); border: 1px solid var(--border-color);
+    padding: 25px 50px; display: flex; justify-content: space-between; align-items: center;
     backdrop-filter: blur(20px); pointer-events: auto;
 }
 
-.track-meta h2 { font-family: 'Syncopate'; font-size: 1.2rem; margin: 0; color: #fff; }
-.track-meta p { margin: 5px 0 0 0; font-size: 0.8rem; opacity: 0.6; }
+.track-meta h2 { font-family: 'Syncopate'; font-size: 1.1rem; margin: 0; letter-spacing: 3px; }
+.track-meta p { margin: 5px 0 0 0; font-size: 0.7rem; opacity: 0.4; }
 
-.mini-visualizer { display: flex; align-items: center; gap: 20px; }
-#freq-hex { font-size: 1.4rem; font-weight: bold; width: 60px; }
-#analyser-render { width: 200px; height: 40px; }
+.visual-meta { display: flex; gap: 30px; }
+.meta-box { width: 120px; }
+.label { font-size: 0.6rem; opacity: 0.5; display: block; margin-bottom: 5px; }
+.stat-bar { width: 100%; height: 3px; background: #222; position: relative; }
+.fill { height: 100%; background: var(--dna-color); width: 0%; transition: width 0.5s ease; }
 
-/* STABLE PULSE (No Screen Shake) */
-.bass-pulse {
-    transform: scale(1.005); /* Very subtle UI breathing */
-    transition: transform 0.05s ease-out;
-}
+.mini-visualizer { width: 180px; height: 40px; }
+#analyser-render { width: 100%; height: 100%; }
 
 #ignite-btn {
-    margin-top: 30px; padding: 15px 40px; background: transparent;
-    border: 1px solid var(--primary); color: var(--primary);
-    cursor: pointer; font-family: 'Share Tech Mono'; letter-spacing: 5px;
+    margin-top: 40px; padding: 15px 50px; background: transparent;
+    border: 1px solid var(--dna-color); color: var(--dna-color);
+    cursor: pointer; font-family: 'Share Tech Mono'; letter-spacing: 6px;
+    transition: 0.3s;
+}
+
+#ignite-btn:hover { background: var(--dna-color); color: #000; box-shadow: 0 0 30px var(--dna-color); }
+
+/* SUBTLE BREATHING (NO SHAKE) */
+.bass-sync {
+    border-color: var(--dna-color) !important;
+    box-shadow: inset 0 0 20px rgba(255,255,255,0.02);
 }
