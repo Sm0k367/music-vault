@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE MATRIX OF SMOKE // DJ SMOKE STREAM</title>
-    <style>body { background: #000; margin: 0; overflow: hidden; color: #00f2ff; }</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SMOKE_STREAM // NEURAL MULTIVERSE</title>
+    <style>body { background: #000; margin: 0; overflow: hidden; }</style>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -15,10 +15,8 @@
         <div class="glitch-container">
             <h1 class="system-title" data-text="SMOKE_STREAM_OS">SMOKE_STREAM_OS</h1>
             <div class="load-bar-container"><div id="load-bar"></div></div>
-            <p id="boot-status">ENCRYPTING MULTIVERSE NODES...</p>
-            <div id="btn-wrapper">
-                <button id="ignite-btn" style="display:none;">INITIALIZE NEURAL LINK</button>
-            </div>
+            <p id="boot-status">MAPPING PROCEDURAL DIMENSIONS...</p>
+            <button id="ignite-btn" style="display:none;">INITIALIZE NEURAL LINK</button>
         </div>
     </div>
 
@@ -26,12 +24,12 @@
 
     <div id="hud-interface">
         <header>
-            <div class="system-status">SYNC: <span id="sync-val">0.00</span></div>
-            <div class="active-node">DNA_SEED: <span id="dna-seed">0x000000</span></div>
-            <div class="effect-status">FX: <span id="fx-mode">IDLE</span></div>
+            <div class="hud-box">SYNC: <span id="sync-val">0.00</span></div>
+            <div class="hud-box">SEED: <span id="dna-seed">0x00</span></div>
+            <div class="hud-box hidden-mobile">REALM: <span id="realm-type">VOID</span></div>
         </header>
 
-        <aside id="system-logs"></aside>
+        <aside id="system-logs" class="hidden-mobile"></aside>
 
         <nav id="node-directory">
             <div class="directory-header">NODE_ARCHIVE [67_TRACKS]</div>
@@ -39,29 +37,31 @@
         </nav>
 
         <div class="bottom-dock">
-            <div class="track-meta">
-                <h2 id="current-track">SYSTEM_READY</h2>
-                <p id="track-sub">SELECT AUDIO FREQUENCY TO BEGIN</p>
+            <div class="track-info">
+                <h2 id="current-track">SYSTEM_IDLE</h2>
+                <div class="mini-visualizer">
+                    <canvas id="analyser-render"></canvas>
+                </div>
             </div>
             
-            <div class="mini-visualizer">
-                <canvas id="analyser-render"></canvas>
-            </div>
-            <button id="share-dna-btn">SHARE_DNA</button>
-        </div>
-    </div>
-
-    <div id="dna-card-popup" style="display:none;">
-        <div class="popup-content">
-            <img id="dna-card-image" src="">
-            <div class="share-buttons">
-                <a id="download-dna" download="smoke_dna.png">DOWNLOAD</a>
-                <button onclick="document.getElementById('dna-card-popup').style.display='none'">CLOSE</button>
+            <div class="action-bar">
+                <button id="share-dna-btn">SHARE_DNA</button>
             </div>
         </div>
     </div>
 
-    <canvas id="share-canvas" style="display:none;"></canvas>
+    <div id="dna-card-popup">
+        <div class="popup-inner">
+            <div class="card-frame">
+                <img id="dna-card-image" src="">
+            </div>
+            <div class="popup-btns">
+                <a id="download-dna" download="smoke_stream_dna.png">SAVE_TO_DISK</a>
+                <button id="close-popup">EXIT_NODE</button>
+            </div>
+        </div>
+    </div>
+
     <audio id="audio-master" crossorigin="anonymous"></audio>
 
     <script src="main.js"></script>
