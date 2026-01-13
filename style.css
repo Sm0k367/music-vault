@@ -1,201 +1,103 @@
-/* --- THE MATRIX OF SMOKE // UI v4.20 --- */
+/* --- THE MATRIX OF SMOKE // STABLE MULTIVERSE --- */
 :root {
-    --neon-blue: #00f2ff;
-    --neon-gold: #ffcc00;
-    --neon-red: #ff0044;
-    --glass: rgba(0, 0, 0, 0.7);
+    --primary: #00f2ff;
+    --accent: #00f2ff;
+    --glass: rgba(0, 0, 0, 0.8);
+    --text: #ffffff;
 }
+
+/* REALM THEMES */
+body.realm-gold { --primary: #ffcc00; --accent: #ffae00; }
+body.realm-blue { --primary: #0077ff; --accent: #00d4ff; }
+body.realm-red { --primary: #ff0044; --accent: #ff4d00; }
+body.realm-emerald { --primary: #00ff88; --accent: #00ffcc; }
 
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syncopate:wght@700&display=swap');
 
 body, html {
     margin: 0; padding: 0;
     background: #000;
-    color: var(--neon-blue);
+    color: var(--primary);
     font-family: 'Share Tech Mono', monospace;
     overflow: hidden;
     height: 100vh;
+    transition: color 1.5s ease; /* Smoothly transitions text colors */
 }
 
-/* --- THE 3D WORLD STAGE --- */
-#world-canvas {
-    position: fixed;
-    top: 0; left: 0;
-    z-index: 1;
-}
+#world-canvas { position: fixed; top: 0; left: 0; z-index: 1; }
 
-/* --- BOOT OVERLAY --- */
+/* BOOT SYSTEM */
 #boot-overlay {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    position: fixed; inset: 0; background: #000; z-index: 10000;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
 }
 
-.glitch-container { text-align: center; }
-.system-title { 
-    font-family: 'Syncopate'; 
-    font-size: 2rem; 
-    letter-spacing: 5px; 
-    margin-bottom: 20px;
-    text-shadow: 0 0 15px var(--neon-blue);
-}
+.system-title { font-family: 'Syncopate'; font-size: 1.8rem; letter-spacing: 8px; margin-bottom: 20px; }
+.load-bar-container { width: 300px; height: 2px; background: #111; margin: 20px auto; }
+#load-bar { width: 0%; height: 100%; background: var(--primary); transition: width 0.3s; }
 
-.load-bar-container {
-    width: 300px;
-    height: 4px;
-    background: #222;
-    margin: 20px auto;
-}
-
-#load-bar {
-    width: 0%;
-    height: 100%;
-    background: var(--neon-blue);
-    box-shadow: 0 0 10px var(--neon-blue);
-}
-
-/* --- HUD INTERFACE LAYERS --- */
+/* HUD INTERFACE */
 #hud-interface {
-    position: relative;
-    z-index: 10;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    pointer-events: none;
-    padding: 20px;
+    position: relative; z-index: 10; height: 100vh;
+    display: flex; flex-direction: column; pointer-events: none; padding: 30px;
 }
 
-#hud-interface header {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+header {
+    display: flex; justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
 }
 
-/* SYSTEM LOGS (LEFT SIDEBAR) */
 #system-logs {
-    position: absolute;
-    left: 20px;
-    top: 100px;
-    width: 250px;
-    height: 300px;
-    background: var(--glass);
-    border-left: 2px solid var(--neon-blue);
-    padding: 10px;
-    font-size: 0.7rem;
-    overflow-y: hidden;
-    pointer-events: auto;
+    position: absolute; left: 30px; top: 120px; width: 220px; height: 200px;
+    background: var(--glass); border-left: 2px solid var(--primary);
+    padding: 10px; font-size: 0.7rem; pointer-events: auto;
 }
 
-.log-entry { margin-bottom: 5px; opacity: 0.8; }
-
-/* SONG DIRECTORY (RIGHT SIDEBAR) */
 #node-directory {
-    position: absolute;
-    right: 20px;
-    top: 80px;
-    width: 300px;
-    bottom: 150px;
-    background: var(--glass);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    pointer-events: auto;
-    display: flex;
-    flex-direction: column;
+    position: absolute; right: 30px; top: 100px; width: 320px; bottom: 180px;
+    background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px); pointer-events: auto; display: flex; flex-direction: column;
 }
 
-.filter-tabs {
-    display: flex;
-    background: rgba(0,0,0,0.5);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.filter-tabs button {
-    flex: 1;
-    background: none;
-    border: none;
-    color: #888;
-    padding: 10px;
-    font-family: 'Share Tech Mono';
-    cursor: pointer;
-}
-
-.filter-tabs button:hover { color: #fff; }
-
-#song-list {
-    flex: 1;
-    overflow-y: scroll;
-    padding: 10px;
-}
-
-#song-list::-webkit-scrollbar { width: 4px; }
-#song-list::-webkit-scrollbar-thumb { background: var(--neon-blue); }
+#song-list { flex: 1; overflow-y: auto; padding: 10px; }
+#song-list::-webkit-scrollbar { width: 3px; }
+#song-list::-webkit-scrollbar-thumb { background: var(--primary); }
 
 .song-node {
-    padding: 12px;
-    margin-bottom: 5px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition: 0.2s;
+    padding: 15px; margin-bottom: 5px; background: rgba(255,255,255,0.02);
+    border: 1px solid transparent; cursor: pointer; transition: 0.3s;
+    color: #888;
 }
 
 .song-node:hover {
-    background: rgba(0, 242, 255, 0.1);
-    border-left: 3px solid var(--neon-blue);
-    padding-left: 15px;
+    background: rgba(255,255,255,0.05); color: var(--primary);
+    border-left: 2px solid var(--primary);
 }
 
-/* VISUALIZER DOCK (BOTTOM) */
-.visualizer-container {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
-    height: 80px;
-    background: var(--glass);
-    border: 1px solid rgba(0, 242, 255, 0.2);
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
+/* BOTTOM DOCK (The Controls) */
+.bottom-dock {
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    width: 90%; background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
+    padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
+    backdrop-filter: blur(20px); pointer-events: auto;
 }
 
-#analyser-render {
-    width: 100%;
-    height: 50px;
+.track-meta h2 { font-family: 'Syncopate'; font-size: 1.2rem; margin: 0; color: #fff; }
+.track-meta p { margin: 5px 0 0 0; font-size: 0.8rem; opacity: 0.6; }
+
+.mini-visualizer { display: flex; align-items: center; gap: 20px; }
+#freq-hex { font-size: 1.4rem; font-weight: bold; width: 60px; }
+#analyser-render { width: 200px; height: 40px; }
+
+/* STABLE PULSE (No Screen Shake) */
+.bass-pulse {
+    transform: scale(1.005); /* Very subtle UI breathing */
+    transition: transform 0.05s ease-out;
 }
 
-#freq-hex {
-    font-size: 1.5rem;
-    color: var(--neon-gold);
-    margin-right: 20px;
-}
-
-/* BUTTONS */
 #ignite-btn {
-    margin-top: 20px;
-    padding: 15px 30px;
-    background: var(--neon-blue);
-    border: none;
-    color: #000;
-    font-weight: 900;
-    cursor: pointer;
-    box-shadow: 0 0 20px var(--neon-blue);
-}
-
-/* GLOBAL BASS REACTION */
-.bass-kick {
-    animation: glitch-skew 0.1s infinite;
-}
-
-@keyframes glitch-skew {
-    0% { transform: skewX(0deg); }
-    50% { transform: skewX(2deg); filter: hue-rotate(90deg); }
-    100% { transform: skewX(0deg); }
+    margin-top: 30px; padding: 15px 40px; background: transparent;
+    border: 1px solid var(--primary); color: var(--primary);
+    cursor: pointer; font-family: 'Share Tech Mono'; letter-spacing: 5px;
 }
